@@ -10,9 +10,11 @@ mp_pose = mp.solutions.pose
 def parse_annotation(annotation_path):
     with open(annotation_path, "r") as f:
         lines = [l.strip() for l in f.readlines() if l.strip()]
+    if "," in lines[0]:
+        return -1, -1
     start_frame = int(lines[0])
     end_frame = int(lines[1])
-    return start_frame,end_frame
+    return start_frame, end_frame
 
 def process_video(video_path, annotation_path, pose):
     start_frame, end_frame = parse_annotation(annotation_path)
