@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 from database import (
     init_db, get_persons, get_devices, get_alerts,
     get_active_alert_count, get_total_falls_this_month, get_fall_counts_by_day
@@ -52,9 +54,10 @@ for col, bg, fg, icon, value, label, sub in stat_cards:
 
 st.write("")
 
-left, right = st.columns([1.15, 1])
+# ---- Row 1: Recent Alerts | Monitored Person Status ----
+row1_left, row1_right = st.columns([1.15, 1])
 
-with left:
+with row1_left:
     st.markdown('<div class="cp-panel"><div class="cp-panel-title">Recent Alerts</div>', unsafe_allow_html=True)
     if not alerts:
         st.markdown('<div class="cp-alert-meta">No alerts yet.</div>', unsafe_allow_html=True)
@@ -78,16 +81,7 @@ with left:
     st.markdown('</div>', unsafe_allow_html=True)
     st.page_link("screens/alerts.py", label="View all alerts →")
 
-    st.markdown('<div class="cp-panel"><div class="cp-panel-title">Fall Activity (This Month)</div>', unsafe_allow_html=True)
-    day_counts = get_fall_counts_by_day(uid)
-    if day_counts:
-        df = pd.DataFrame(day_counts, columns=["Day", "Falls"]).set_index("Day")
-        st.line_chart(df, color="#2F6FE4", height=220)
-    else:
-        st.markdown('<div class="cp-alert-meta">No fall activity recorded yet.</div>', unsafe_allow_html=True)
-    st.markdown('</div>', unsafe_allow_html=True)
-
-with right:
+with row1_right:
     st.markdown('<div class="cp-panel"><div class="cp-panel-title">Monitored Person Status</div>', unsafe_allow_html=True)
     if not persons:
         st.markdown('<div class="cp-alert-meta">No one added yet. Go to Users to add someone.</div>', unsafe_allow_html=True)
@@ -109,6 +103,53 @@ with right:
     st.markdown('</div>', unsafe_allow_html=True)
     st.page_link("screens/users.py", label="View all persons →")
 
+st.write("")
+
+# ---- Row 2: Fall Activity | Devices Status (aligned side by side) ----
+row2_left, row2_right = st.columns([1.15, 1])
+
+with row2_left:
+    st.markdown('<div class="cp-panel"><div class="cp-panel-title">Fall Activity (This Month)</div>', unsafe_allow_html=True)
+    day_counts = get_fall_counts_by_day(uid)
+    if day_counts:
+        df = pd.DataFrame(day_counts, columns=["Day", "Falls"])
+        df["Day"] = pd.to_datetime(df["Day"])
+
+        fig, ax = plt.subplots(figsize=(6, 3), dpi=150)
+        fig.patch.set_facecolor("#FFFFFF")
+        ax.set_facecolor("#FFFFFF")
+
+        ax.plot(
+            df["Day"], df["Falls"],
+            color="#2F6FE4", linewidth=2.5, marker="o",
+            markersize=6, markerfacecolor="#2F6FE4",
+            markeredgecolor="#FFFFFF", markeredgewidth=1.5,
+            zorder=3
+        )
+        ax.fill_between(df["Day"], df["Falls"], color="#2F6FE4", alpha=0.12, zorder=2)
+
+        max_falls = int(df["Falls"].max())
+        ax.set_ylim(0, max_falls + 1)
+        ax.yaxis.set_major_locator(plt.MaxNLocator(integer=True))
+        ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %d"))
+        fig.autofmt_xdate(rotation=0, ha="center")
+
+        ax.grid(axis="y", color="#E7EBF3", linewidth=0.8, zorder=1)
+        ax.set_axisbelow(True)
+        for spine in ["top", "right", "left"]:
+            ax.spines[spine].set_visible(False)
+        ax.spines["bottom"].set_color("#D8DEEA")
+        ax.tick_params(colors="#6B7280", labelsize=9)
+        ax.set_ylabel("Falls", color="#6B7280", fontsize=9)
+
+        fig.tight_layout()
+        st.pyplot(fig, use_container_width=True)
+        plt.close(fig)
+    else:
+        st.markdown('<div class="cp-alert-meta">No fall activity recorded yet.</div>', unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with row2_right:
     st.markdown('<div class="cp-panel"><div class="cp-panel-title">Devices Status</div>', unsafe_allow_html=True)
     if not devices:
         st.markdown('<div class="cp-alert-meta">No devices added yet.</div>', unsafe_allow_html=True)
