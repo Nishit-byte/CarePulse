@@ -5,7 +5,7 @@ mp_pose = mp.solutions.pose
 
 def get_landmark_point(landmarks, idx, w, h):
     lm = landmarks[idx]
-    return np.array([lm.x * w, lm.y *h])
+    return np.array([lm.x * w, lm.y * h])
 
 def compute_torso_angle(shoulder_center, hip_center):
     dx = hip_center[0] - shoulder_center[0]
@@ -24,19 +24,19 @@ def extract_features(landmarks, w, h, prev_hip_center):
     right_hip = get_landmark_point(landmarks, mp_pose.PoseLandmark.RIGHT_HIP.value, w, h)
     left_shoulder = get_landmark_point(landmarks, mp_pose.PoseLandmark.LEFT_SHOULDER.value, w, h)
     right_shoulder = get_landmark_point(landmarks, mp_pose.PoseLandmark.RIGHT_SHOULDER.value, w, h)
- 
+
     hip_center = (left_hip + right_hip) / 2
     shoulder_center = (left_shoulder + right_shoulder) / 2
- 
+
     aspect_ratio = compute_bbox_aspect_ratio(landmarks, w, h)
     torso_angle = compute_torso_angle(shoulder_center, hip_center)
     hip_y_norm = hip_center[1] / h
     shoulder_hip_dist_norm = np.linalg.norm(shoulder_center - hip_center) / h
- 
+
     velocity = 0.0
     if prev_hip_center is not None:
         velocity = np.linalg.norm(hip_center - prev_hip_center) / h
- 
+
     features = {
         "aspect_ratio": aspect_ratio,
         "torso_angle": torso_angle,

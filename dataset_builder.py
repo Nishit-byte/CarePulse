@@ -1,9 +1,8 @@
 import os
 import cv2
 import mediapipe as mp
-import pandas as pd 
+import pandas as pd
 from pose_utils import extract_features
-
 
 mp_pose = mp.solutions.pose
 
@@ -24,7 +23,7 @@ def process_video(video_path, annotation_path, pose):
     prev_hip_center = None
 
     while cap.isOpened():
-        ret, frame  = cap.read()
+        ret, frame = cap.read()
         if not ret:
             break
         frame_idx += 1
@@ -35,9 +34,9 @@ def process_video(video_path, annotation_path, pose):
         if results.pose_landmarks:
             landmarks = results.pose_landmarks.landmark
             features, hip_center = extract_features(landmarks, w, h, prev_hip_center)
-
             prev_hip_center = hip_center
-            label = 1 if start_frame <= frame_idx <= end_frame else 0 
+
+            label = 1 if start_frame <= frame_idx <= end_frame else 0
             features["label"] = label
             rows.append(features)
 
@@ -45,19 +44,19 @@ def process_video(video_path, annotation_path, pose):
     return rows
 
 def build_dataset(dataset_root, output_csv):
-    pose = mp_pose.Pose(min_detection_confidence = 0.5, min_tracking_confidence = 0.5)
+    pose = mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
     all_rows = []
-    
+
     for subset in os.listdir(dataset_root):
         outer_path = os.path.join(dataset_root, subset)
         inner_path = os.path.join(outer_path, subset)
         subset_path = inner_path if os.path.isdir(inner_path) else outer_path
-        annotations_dir = os.path.join(subset_path, "Annotation_files")
         videos_dir = os.path.join(subset_path, "Videos")
-        
+        annotations_dir = os.path.join(subset_path, "Annotation_files")
 
         if not os.path.isdir(videos_dir) or not os.path.isdir(annotations_dir):
             continue
+
         for video_file in os.listdir(videos_dir):
             name, ext = os.path.splitext(video_file)
             annotation_file = name + ".txt"
@@ -67,17 +66,13 @@ def build_dataset(dataset_root, output_csv):
             if not os.path.exists(annotation_path):
                 continue
 
-
             print(f"Processing {subset}/{video_file}")
             rows = process_video(video_path, annotation_path, pose)
             all_rows.extend(rows)
 
-
     df = pd.DataFrame(all_rows)
-    df.to_csv(output_csv, index = False)
+    df.to_csv(output_csv, index=False)
     print(f"Saved {len(df)} rows to {output_csv}")
 
 if __name__ == "__main__":
-    build_dataset("data/le2i", "data/features.csv")        
-
-
+    build_dataset("data/le2i", "data/features.csv")

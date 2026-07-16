@@ -1,15 +1,31 @@
+# ---- Core computer vision & pose detection ----
 opencv-python==4.10.0.84
 mediapipe==0.10.14
+
+# ---- Data handling & ML (rule engine + Random Forest classifier) ----
 numpy==1.26.4
 pandas==2.2.2
 scikit-learn==1.5.1
 joblib==1.4.2
+
+# ---- Optional: sequence model upgrade for final project (LSTM/GRU) ----
 tensorflow==2.17.0
+
+# ---- Backend server (runs detection loop, exposes status endpoint) ----
 flask==3.0.3
 python-dotenv==1.0.1
-twilio==9.2.3
-streamlit==1.37.0
-matplotlib==3.9.2
-kaggle==1.6.17
-tqdm==4.66.4
 
+# ---- WhatsApp alert delivery ----
+twilio==9.2.3
+
+# ---- Dashboard for final project demo ----
+streamlit==1.37.0
+
+# ---- Plotting (fall history graphs, threshold tuning visualizations) ----
+matplotlib==3.9.2
+
+# ---- Dataset download (Le2i / Multiple Cameras Fall Dataset from Kaggle) ----
+kaggle==1.6.17
+
+# ---- Utilities ----
+tqdm==4.66.4
