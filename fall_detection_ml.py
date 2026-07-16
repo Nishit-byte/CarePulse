@@ -3,6 +3,7 @@ import mediapipe as mp
 import numpy as np
 import time
 import os
+import sys
 import joblib
 import pandas as pd
 from dotenv import load_dotenv
@@ -49,15 +50,21 @@ def send_whatsapp_alert(location="Living Room"):
 
 def main():
     init_db()
-    live_person = get_live_person()
+
+    if len(sys.argv) < 2:
+        username = input("Enter your CarePulse username to monitor: ").strip()
+    else:
+        username = sys.argv[1]
+
+    live_person = get_live_person(username=username)
     if live_person is None:
-        print("No live person found. Run seed_data.py first.")
+        print(f"No account found for username '{username}', or no live person configured. Sign up in the app first.")
         return
 
     person_id = live_person["id"]
     device_id = live_person["device_id"]
     room = live_person["room"]
-    print(f"Monitoring started for: {live_person['name']} ({room})")
+    print(f"Monitoring started for account '{username}': {live_person['name']} ({room})")
 
     cap = cv2.VideoCapture(0)
     prev_hip_center = None
@@ -67,7 +74,11 @@ def main():
     current_alert_id = None
 
     while cap.isOpened():
-        ret, frame = cap.read()
+        try:
+            ret, frame = cap.read()
+        except Exception as e:
+            print(f"ERROR reading camera frame: {e}")
+            break
         if not ret:
             print("ERROR: Camera frame not received. Exiting.")
             break

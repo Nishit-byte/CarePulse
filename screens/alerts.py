@@ -1,6 +1,6 @@
 import streamlit as st
 from database import init_db, get_alerts, get_alert_by_id, resolve_alert
-from style import STYLE, render_sidebar_brand
+from style import STYLE, render_sidebar
 
 if not st.session_state.get("logged_in"):
     st.rerun()
@@ -8,16 +8,8 @@ if not st.session_state.get("logged_in"):
 init_db()
 uid = st.session_state.user_id
 st.markdown(STYLE, unsafe_allow_html=True)
-render_sidebar_brand(st)
+render_sidebar(st, st.session_state.username)
 
-with st.sidebar:
-    st.write("")
-    st.markdown(f'<div class="cp-subtitle">Signed in as</div><div class="cp-person-name">{st.session_state.username}</div>', unsafe_allow_html=True)
-    if st.button("Log Out", use_container_width=True):
-        st.session_state.logged_in = False
-        st.session_state.username = None
-        st.session_state.user_id = None
-        st.rerun()
 
 st.markdown('<div class="cp-title">Alerts</div><div class="cp-subtitle">All fall detection alerts for your monitored persons</div>', unsafe_allow_html=True)
 
