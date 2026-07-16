@@ -9,7 +9,7 @@ import pandas as pd
 from dotenv import load_dotenv
 from twilio.rest import Client
 from pose_utils import extract_features
-from database import init_db, get_live_person, log_alert, resolve_alert, set_person_status
+from database import init_db, get_live_person, log_alert, resolve_alert, set_person_status, get_motionless_seconds
 
 load_dotenv()
 
@@ -24,7 +24,7 @@ pose = mp_pose.Pose(min_detection_confidence=0.6, min_tracking_confidence=0.6)
 
 model = joblib.load("models/fall_classifier.pkl")
 
-MOTIONLESS_SECONDS = 10
+MOTIONLESS_SECONDS = 10  # fallback default; actual value is loaded per-user below
 MOTIONLESS_DELTA = 0.015
 
 def send_whatsapp_alert(location="Living Room"):
@@ -64,7 +64,9 @@ def main():
     person_id = live_person["id"]
     device_id = live_person["device_id"]
     room = live_person["room"]
-    print(f"Monitoring started for account '{username}': {live_person['name']} ({room})")
+    MOTIONLESS_SECONDS = get_motionless_seconds(live_person["user_id"])
+    print(f"Monitoring started for account '{username}': {live_person['name']} ({room}) — "
+          f"alert fires after {MOTIONLESS_SECONDS}s motionless (set in Settings).")
 
     cap = cv2.VideoCapture(0)
     prev_hip_center = None

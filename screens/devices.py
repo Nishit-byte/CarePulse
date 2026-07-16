@@ -134,8 +134,4 @@ else:
         )
     if recent_alerts:
         st.markdown(f'<div class="cp-alert-meta" style="margin-top:0.8rem;">Last alert: {recent_alerts[0]["timestamp"]}</div>', unsafe_allow_html=True)
-    st.markdown(
-        f'<div class="cp-alert-meta" style="margin-top:0.4rem;">Run <code>python fall_detection_ml.py {st.session_state.username}</code> in a terminal to start live detection for your account.</div>',
-        unsafe_allow_html=True
-    )
 st.markdown('</div>', unsafe_allow_html=True)

@@ -42,7 +42,7 @@ for col, bg, fg, icon, value, label in report_stats:
 
 st.write("")
 
-st.markdown('<div class="cp-panel"><div class="cp-panel-title">Falls by Person</div>', unsafe_allow_html=True)
+st.markdown('<div class="cp-panel cp-panel-narrow"><div class="cp-panel-title">Falls by Person</div>', unsafe_allow_html=True)
 if not persons:
     st.markdown('<div class="cp-alert-meta">No one added yet.</div>', unsafe_allow_html=True)
 for p in persons:
@@ -58,7 +58,7 @@ for p in persons:
     )
 st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown('<div class="cp-panel"><div class="cp-panel-title">Fall Trend</div>', unsafe_allow_html=True)
+st.markdown('<div class="cp-panel cp-panel-narrow"><div class="cp-panel-title">Fall Trend</div>', unsafe_allow_html=True)
 day_counts = get_fall_counts_by_day(uid)
 if day_counts:
     df = pd.DataFrame(day_counts, columns=["Day", "Falls"]).set_index("Day")

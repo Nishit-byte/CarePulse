@@ -24,6 +24,22 @@ section[data-testid="stSidebar"] [aria-current="page"] * {
     color: #FFFFFF !important;
 }
 
+/* Sidebar collapse/expand arrow - visible at all times, not just on hover */
+[data-testid="collapsedControl"] {
+    background: #161D34 !important;
+    border-radius: 8px !important;
+    padding: 4px !important;
+    opacity: 1 !important;
+    box-shadow: 0 2px 8px rgba(20, 30, 60, 0.25);
+}
+[data-testid="collapsedControl"] svg {
+    fill: #FFFFFF !important;
+    color: #FFFFFF !important;
+}
+[data-testid="collapsedControl"]:hover {
+    background: #2F6FE4 !important;
+}
+
 .cp-brand {
     display: flex;
     align-items: center;
@@ -58,6 +74,9 @@ section[data-testid="stSidebar"] [aria-current="page"] * {
 .cp-panel {
     background: #FFFFFF; border-radius: 18px; padding: 1.4rem 1.5rem;
     box-shadow: 0 2px 10px rgba(20, 30, 60, 0.05); border: 1px solid #EEF1F8; margin-bottom: 1.2rem;
+}
+.cp-panel-narrow {
+    max-width: 620px;
 }
 .cp-panel-title { font-weight: 700; font-size: 1.05rem; color: #1A2135; margin-bottom: 0.9rem; }
 
@@ -133,6 +152,25 @@ section[data-testid="stSidebar"] [aria-current="page"] * {
 .stTextInput label, .stTextArea label, .stNumberInput label, .stSelectbox label, .stSlider label, .stCheckbox label {
     color: #1A2135 !important;
     font-weight: 600 !important;
+}
+/* Disabled/readonly inputs render invisible text in Chrome/Edge because
+   -webkit-text-fill-color overrides `color` for disabled fields - fix that */
+.stTextInput input:disabled,
+.stTextInput input[readonly] {
+    -webkit-text-fill-color: #1A2135 !important;
+    color: #1A2135 !important;
+    opacity: 1 !important;
+    background-color: #F3F5FA !important;
+}
+/* Checkbox + slider labels sit in nested <p> tags in newer Streamlit versions */
+.stCheckbox label p,
+[data-testid="stCheckbox"] label p,
+[data-testid="stWidgetLabel"] p {
+    color: #1A2135 !important;
+    opacity: 1 !important;
+}
+[data-testid="stCheckbox"] span {
+    border-color: #8891A8 !important;
 }
 div[data-baseweb="select"] * {
     color: #1A2135 !important;

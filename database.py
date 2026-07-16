@@ -68,6 +68,15 @@ def init_db():
     """)
 
     conn.commit()
+
+    # Migration: add motionless_seconds column for databases created before
+    # this setting existed (ALTER fails silently if the column already exists)
+    try:
+        cursor.execute("ALTER TABLE users ADD COLUMN motionless_seconds INTEGER NOT NULL DEFAULT 10")
+        conn.commit()
+    except sqlite3.OperationalError:
+        pass
+
     conn.close()
 
 def add_user(username, email, password):
@@ -290,5 +299,20 @@ def clear_live_person(user_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("UPDATE persons SET is_live = 0 WHERE user_id = ?", (user_id,))
+    conn.commit()
+    conn.close()
+
+def get_motionless_seconds(user_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT motionless_seconds FROM users WHERE id = ?", (user_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return row[0] if row and row[0] is not None else 10
+
+def update_motionless_seconds(user_id, seconds):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET motionless_seconds = ? WHERE id = ?", (int(seconds), user_id))
     conn.commit()
     conn.close()
