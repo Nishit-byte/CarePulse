@@ -1,3 +1,55 @@
-/carepulse
-data/le2i/
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# ---- Virtual environments ----
+venv/
+env/
+ENV/
+.venv/
+carepulse/
+carepulse-env/
+
+# Fallback: catch any venv folder regardless of name (Windows-style layout)
+**/Lib/site-packages/
+**/Scripts/
+**/pyvenv.cfg
+
+# ---- Environment variables / secrets ----
 .env
+.env.*
+!.env.example
+
+# ---- Streamlit ----
+.streamlit/secrets.toml
+
+# ---- Data & model artifacts ----
+data/
+*.csv
+*.zip
+models/*.pkl
+!models/.gitkeep
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- Jupyter ----
+.ipynb_checkpoints/
+
+# ---- IDE / editor ----
+.vscode/
+.idea/
+*.swp
+
+# ---- OS junk ----
+.DS_Store
+Thumbs.db
+
+# ---- Distribution / packaging ----
+build/
+dist/
+*.egg-info/
